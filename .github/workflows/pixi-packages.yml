@@ -30,7 +30,7 @@ jobs:
           # byte compilation once rattler-build has support.
           # See https://github.com/prefix-dev/pixi/pull/5737
           # - tsan-freethreading
-    if: github.repository == 'numpy/numpy'
+    if: true
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:

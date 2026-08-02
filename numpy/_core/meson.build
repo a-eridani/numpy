@@ -919,7 +919,7 @@ foreach gen_mtargets : [
   [
     'masked_compress.dispatch.h',
     'src/multiarray/masked_compress.dispatch.cpp',
-     use_highway ? [
+    use_highway ? [
       ASIMD, NEON,
       X86_V4, X86_V3, X86_V2,
       VSX2,

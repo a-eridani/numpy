@@ -1,0 +1,17 @@
+name: hwy link probe
+on: [ push, workflow_dispatch ]
+jobs:
+  nohwy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements/build_requirements.txt
+      - run: pip install -r requirements/test_requirements.txt
+      - run: spin build -- -Dcpu-dispatch=none -Ddisable-highway=true -Dallow-noblas=true
+      - run: spin run python -P -c "import numpy; print(numpy.__version__)"
+      - run: spin test -t numpy/_core/tests/test_ufunc.py -- -k where_contiguous -q

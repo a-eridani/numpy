@@ -1086,6 +1086,7 @@ gather_masked_strided_loop(PyArrayMethod_Context *context,
                     (const unsigned char*)mask,
                     NPY_MASKED_GATHER_BLOCKSIZE,
                     elsize[i]);
+
         }
         for (int i = 0; i < nargs; ++i) {
             dataptrs[i] += NPY_MASKED_GATHER_BLOCKSIZE * strides[i];
@@ -1157,8 +1158,7 @@ PyArrayMethod_GetMaskedStridedLoop(
     }
     if (eligible) {
         npy_uintp raw = (npy_uintp)(data->dataptrs + nargs);
-        data->buf = (char *)((raw + 15)
-                                 & ~(npy_uintp)(15));
+        data->buf = (char *)((raw + 15) & ~(npy_uintp)(15));
         NPY_CPU_DISPATCH_CALL(data->count_nonzero = npy_count_nonzero_mask);
         NPY_CPU_DISPATCH_CALL(data->compress = npy_masked_compress);
         NPY_CPU_DISPATCH_CALL(data->expand = npy_masked_expand);

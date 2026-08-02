@@ -1,11 +1,16 @@
 #include "masked_compress.h"
 
-#include <hwy/base.h>
 #include "simd/simd.hpp"
 #include <cassert>
 #include <cstdint>
 
 namespace {
+#if NPY_HWY && !(HWY_ARCH_X86 && HWY_TARGET > HWY_AVX2)
+#define NPY_MASKED_EXPAND_HWY 1
+#else
+#define NPY_MASKED_EXPAND_HWY 0
+#endif
+
 #if NPY_HWY
 namespace hn = hwy::HWY_NAMESPACE;
 #endif
@@ -42,7 +47,7 @@ template <typename T>
 size_t
 expand_kernel(T *dst, const T *src, const unsigned char *mask, size_t n)
 {
-#if NPY_HWY
+#if NPY_MASKED_EXPAND_HWY
     const hn::ScalableTag<T> d;
     const hn::Rebind<uint8_t, decltype(d)> d8;
     const size_t N = hn::Lanes(d);
@@ -50,11 +55,11 @@ expand_kernel(T *dst, const T *src, const unsigned char *mask, size_t n)
 
     size_t i = 0, j = 0;
 
-#if NPY_HWY
+#if NPY_MASKED_EXPAND_HWY
     for (; i + N <= n; i += N) {
         const auto m = hn::PromoteMaskTo(d, d8,
                                          hn::Ne(hn::LoadU(d8, mask + i), hn::Zero(d8)));
-        hn::BlendedStore(hn::LoadExpand(m, d, src + j), m, d, dst + i);
+        hn::StoreU(hn::IfThenElse(m, hn::LoadExpand(m, d, src + j), hn::LoadU(d, dst + i)), d, dst + i);
         j += hn::CountTrue(d, m);
     }
 #endif

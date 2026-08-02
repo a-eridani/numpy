@@ -123,6 +123,7 @@ if use_highway
   )
 else
   highway_lib = []
+  add_project_arguments(['-DNPY_DISABLE_HIGHWAY'], language: ['cpp'])
 endif
 
 use_intel_sort = not get_option('disable-intel-sort') and cpu_family in ['x86', 'x86_64']
@@ -916,6 +917,18 @@ foreach gen_mtargets : [
       VXE, VX
     ]
   ],
+  [
+    'masked_compress.dispatch.h',
+    'src/multiarray/masked_compress.dispatch.cpp',
+    use_highway ? [
+      ASIMD, NEON,
+      X86_V4, X86_V3, X86_V2,
+      VSX2,
+      VX,
+      LSX,
+      RVV,
+    ] : []
+  ],
 ]
   mtargets = mod_features.multi_targets(
     gen_mtargets[0], multiarray_gen_headers + gen_mtargets[1],
@@ -931,7 +944,8 @@ foreach gen_mtargets : [
       'src/multiarray',
       'src/multiarray/stringdtype',
       'src/npymath',
-      'src/umath'
+      'src/umath',
+      'src/highway'
     ]
   )
   if not is_variable('multiarray_umath_mtargets')

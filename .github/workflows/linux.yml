@@ -34,7 +34,7 @@ permissions:
 jobs:
   smoke_test:
     # To enable this job on a fork, comment out:
-    if: github.repository == 'numpy/numpy'
+    if: true
     runs-on: ubuntu-latest
     env:
       MESON_ARGS: "-Dallow-noblas=true -Dcpu-baseline=none -Dcpu-dispatch=none"
@@ -84,7 +84,7 @@ jobs:
     # like the smoke tests but runs on more Python versions
     needs: [smoke_test]
     # To enable this job on a fork, comment out:
-    if: github.repository == 'numpy/numpy'
+    if: true
     runs-on: ubuntu-latest
     env:
       MESON_ARGS: "-Dallow-noblas=true -Dcpu-baseline=none -Dcpu-dispatch=none"
@@ -146,7 +146,7 @@ jobs:
     # Tests NumPy on 32-bit ARM hard-float (armhf) via compatibility mode
     # running on aarch64 (ARM 64-bit) GitHub runners.
     needs: [smoke_test]
-    if: github.repository == 'numpy/numpy'
+    if: true
     runs-on: ubuntu-24.04-arm
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
